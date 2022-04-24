@@ -2,44 +2,115 @@ package wallet
 
 import (
 	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
+	"log"
+
+	"github.com/alikarimi999/wallet/utils"
+	"github.com/btcsuite/btcd/btcec"
+	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/tyler-smith/go-bip39"
 )
 
 type Wallet struct {
-	PrivKey ecdsa.PrivateKey
-	PubKey  []byte
+	MasterKey string
+	Mnemonic  string
+	Seed      []byte
+	Accounts  map[string]*Account
 }
 
-func MakeWallet() *Wallet {
-	priv, pub := GeneratPairkey()
-	return &Wallet{priv, pub}
+type Account struct {
+	ExtendedKey *hdkeychain.ExtendedKey // extended private key
+
+	BtcecPriv *btcec.PrivateKey
+	BtcecPub  *btcec.PublicKey
+
+	PriavateKey *ecdsa.PrivateKey
+	PublicKey   *ecdsa.PublicKey
+
+	PublicKeyByte []byte // serialized compressed Public Key
+	Address       string
+
+	Path Path
 }
 
-func GeneratPairkey() (ecdsa.PrivateKey, []byte) {
-	curve := elliptic.P256()
-	private, err := ecdsa.GenerateKey(curve, rand.Reader)
-	Handle(err)
-	pub := append(private.PublicKey.X.Bytes(), private.PublicKey.Y.Bytes()...)
+func NewWallet(mnemonic string, p Path) *Wallet {
+	seed := bip39.NewSeed(mnemonic, "")
 
-	return *private, pub
+	w := &Wallet{
+		Mnemonic: mnemonic,
+		Seed:     seed,
+		Accounts: make(map[string]*Account),
+	}
 
+	masterKey, err := hdkeychain.NewMaster(seed, &utils.Params)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w.MasterKey = masterKey.String()
+	// creat first account
+	w.NewAccount()
+
+	return w
 }
 
-func (w *Wallet) SignTX(tx *Transaction) (*Transaction, error) {
+func (w *Wallet) Account(a string) *Account {
+	return w.Accounts[a]
+}
+
+func (w *Wallet) NewAccount() {
+	a := &Account{}
+
+	key, err := hdkeychain.NewMaster(w.Seed, &utils.Params)
+	if err != nil {
+		log.Fatal(err)
+	}
+	p := DefaultPath
+	path := []uint32{p.Purpose, p.CoinType, p.Account, p.Change, uint32(len(w.Accounts))}
+	p.AddressIndex = path[4]
+	for _, i := range path {
+		key, err = key.Child(i)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	a.ExtendedKey = key
+	a.Path = p
+
+	priv, err := a.ExtendedKey.ECPrivKey()
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.PriavateKey = priv.ToECDSA()
+	a.PublicKey = &a.PriavateKey.PublicKey
+	a.BtcecPriv = priv
+	a.BtcecPub = priv.PubKey()
+	address, err := a.ExtendedKey.Address(&utils.Params)
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.PublicKeyByte = a.BtcecPub.SerializeCompressed()
+	a.Address = address.EncodeAddress()
+
+	w.Accounts[a.Address] = a
+}
+
+func (a *Account) SignTx(tx *Transaction) {
 
 	for _, in := range tx.TxInputs {
 		in.Signature = nil
 		in.PublicKey = nil
 	}
-	r, s, err := ecdsa.Sign(rand.Reader, &w.PrivKey, tx.Serialize())
-	Handle(err)
-	signature := append(r.Bytes(), s.Bytes()...)
+
+	sig, err := a.BtcecPriv.Sign(tx.TxID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	sigSer := sig.Serialize()
 
 	for _, in := range tx.TxInputs {
-		in.Signature = signature
-		in.PublicKey = w.PubKey
+		in.Signature = sigSer
+		in.PublicKey = a.PublicKeyByte
 	}
 
-	return tx, nil
 }

@@ -12,8 +12,8 @@ import (
 	"github.com/alikarimi999/wallet/wallet"
 )
 
-func GetUTXOSet(user wallet.Account) []*wallet.UTXO {
-	resp, err := http.Get(fmt.Sprintf("http://localhost:5000/getutxo?account=%s", user))
+func GetUTXOSet(address string) []*wallet.UTXO {
+	resp, err := http.Get(fmt.Sprintf("http://localhost:5000/getutxo?account=%s", address))
 
 	if err != nil {
 		log.Fatal(err)
@@ -32,9 +32,9 @@ func GetUTXOSet(user wallet.Account) []*wallet.UTXO {
 
 }
 
-func SendTRX(tx wallet.Transaction) {
+func SendTRX(msg msgTX) {
 
-	b, err := json.Marshal(tx)
+	b, err := json.Marshal(msg)
 	if err != nil {
 		log.Panic(err)
 	}

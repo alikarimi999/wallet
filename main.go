@@ -2,56 +2,77 @@ package main
 
 import (
 	"fmt"
-	"log"
 
+	"github.com/alikarimi999/wallet/config"
 	network "github.com/alikarimi999/wallet/network/http"
+	"github.com/alikarimi999/wallet/utils"
 	"github.com/alikarimi999/wallet/wallet"
 )
 
 func main() {
 
-	ws, err := wallet.LoadFile("./wallet.data")
-	if err != nil {
-		log.Panic(err)
+	config := config.NewConfig("./here/wallet")
+	// var mnemonic = "egg angle gesture jungle credit picnic globe novel aunt flower soccer path"
+
+	// wallet := wallet.NewWallet(mnemonic, wallet.DefaultPath)
+	// fmt.Printf("%x\n", wallet.Seed)
+	// wallet.NewAccount()
+	// wallet.NewAccount()
+	// wallet.NewAccount()
+	// wallet.NewAccount()
+	// config.SaveWallet(wallet)
+	// err := config.SaveConfig()
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+
+	w := config.GetWallet()
+	for _, a := range w.Accounts {
+		fmt.Println(a.Path.Account)
 	}
 
-	// ali to john
-	send(ws, "19xX1RHa44YxjLrz2jQbPrdcen2h6SztVb", "16mqptJgurSbhqdtF1GDLD8CkDsmRt69ge", 10)
-	// // // john to ali
-	err = send(ws, "16mqptJgurSbhqdtF1GDLD8CkDsmRt69ge", "19xX1RHa44YxjLrz2jQbPrdcen2h6SztVb", 5)
-	// // // //
-	err = send(ws, "19xX1RHa44YxjLrz2jQbPrdcen2h6SztVb", "16mqptJgurSbhqdtF1GDLD8CkDsmRt69ge", 2)
+	// test
 
-	// err = send(ws, "1tHozHekDBPngFbGfS3msUKDgNezECFe8", "1F9syUQpU3EBnna1deuwK9Vyr38NX87t65", 1)
-	// err = send(ws, "19xX1RHa44YxjLrz2jQbPrdcen2h6SztVb", "1tHozHekDBPngFbGfS3msUKDgNezECFe8", 20)
-	// err = send(ws, "1tHozHekDBPngFbGfS3msUKDgNezECFe8", "1tHozHekDBPngFbGfS3msUKDgNezECFe8", 12)
-	// err = send(ws, "1tHozHekDBPngFbGfS3msUKDgNezECFe8", "1F9syUQpU3EBnna1deuwK9Vyr38NX87t65", 1)
+	// send(wallet, "1PGrKNuKLJSpui968RGVGnvHmR7vM9UynE", "1Gsojn95GN7dRuGZsn7fJni8i9TAXThQVP", 5)
+	// err := send(wallet, "1PGrKNuKLJSpui968RGVGnvHmR7vM9UynE", "18yQtZqpZ424312HRHDgjAEobZFXeaewhS", 5)
+	// send(wallet, "1PGrKNuKLJSpui968RGVGnvHmR7vM9UynE", "15ccLGNthwrKt4VokNop8hcC3BprUCvttJ", 2)
+
+	// err = send(ws, "19xX1RHa44YxjLrz2jQbPrdcen2h6SztVb", "16mqptJgurSbhqdtF1GDLD8CkDsmRt69ge", 1)
+
+	// err = send(ws, "19xX1RHa44YxjLrz2jQbPrdcen2h6SztVb", "16mqptJgurSbhqdtF1GDLD8CkDsmRt69ge", 1)
+	// err = send(ws, "19xX1RHa44YxjLrz2jQbPrdcen2h6SztVb", "16mqptJgurSbhqdtF1GDLD8CkDsmRt69ge", 1)
+
+	// err = send(ws, "19xX1RHa44YxjLrz2jQbPrdcen2h6SztVb", "1tHozHekDBPngFbGfS3msUKDgNezECFe8", 10)
+	// err = send(ws, "16mqptJgurSbhqdtF1GDLD8CkDsmRt69ge", "1tHozHekDBPngFbGfS3msUKDgNezECFe8", 3)
+	// err = send(ws, "19xX1RHa44YxjLrz2jQbPrdcen2h6SztVb", "1F9syUQpU3EBnna1deuwK9Vyr38NX87t65", 5)
+
+	// err = send(ws, "1tHozHekDBPngFbGfS3msUKDgNezECFe8", "1F9syUQpU3EBnna1deuwK9Vyr38NX87t65", 3)
+	// err = send(ws, "1tHozHekDBPngFbGfS3msUKDgNezECFe8", "1tHozHekDBPngFbGfS3msUKDgNezECFe8", 5)
+	// err = send(ws, "1tHozHekDBPngFbGfS3msUKDgNezECFe8", "1F9syUQpU3EBnna1deuwK9Vyr38NX87t65", 5)
 
 	// err = send(ws, "1tHozHekDBPngFbGfS3msUKDgNezECFe8", "16mqptJgurSbhqdtF1GDLD8CkDsmRt69ge", 8)
-	// err = send(ws, "16mqptJgurSbhqdtF1GDLD8CkDsmRt69ge", "1tHozHekDBPngFbGfS3msUKDgNezECFe8", 9)
-	// err = send(ws, "1F9syUQpU3EBnna1deuwK9Vyr38NX87t65", "1tHozHekDBPngFbGfS3msUKDgNezECFe8", 1)
+	// err = send(ws, "1F9syUQpU3EBnna1deuwK9Vyr38NX87t65", "19xX1RHa44YxjLrz2jQbPrdcen2h6SztVb", 3)
+	// err = send(ws, "16mqptJgurSbhqdtF1GDLD8CkDsmRt69ge", "1tHozHekDBPngFbGfS3msUKDgNezECFe8", 3)
 
-	if err != nil {
-		log.Fatalln(err)
-	}
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
 
 }
 
-func send(ws *wallet.Wallets, from, to wallet.Account, amount int) error {
+func send(w *wallet.Wallet, from, to string, amount int) error {
 
-	w := ws.Wallets[from]
-	pk := w.PubKey
+	sender := w.Account(from)
 	utxos := network.GetUTXOSet(from)
 
-	trx, err := wallet.NewTX(utxos, pk, wallet.Addr2PKH(to), amount)
-	if err != nil {
-		return err
-	}
-	trx, err = w.SignTX(trx)
-	if err != nil {
-		return err
-	}
-	network.SendTRX(*trx)
+	msg := network.NewMsgTX("wallet", utxos, sender.PublicKeyByte, utils.Add2PKH(to), amount)
+
+	msg.TX.TxID = msg.TX.Hash()
+
+	// sign transaction
+	sender.SignTx(&msg.TX)
+
+	network.SendTRX(*msg)
 
 	return nil
 }

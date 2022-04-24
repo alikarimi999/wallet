@@ -2,16 +2,13 @@ package wallet
 
 import "time"
 
-type publickey []byte
-type publickeyhash []byte
+type Publickey []byte // btcec serialized compressed publickey
+type Publickeyhash []byte
 
 type Chainid int
 
-// Account address in string
-type Account string
-
 type Transaction struct {
-	Timestamp time.Time
+	Timestamp time.Duration
 	TxID      []byte
 	TxInputs  []*TxIn
 	TxOutputs []*TxOut

@@ -1,7 +1,7 @@
 package network
 
 import (
-	"time"
+	"log"
 
 	"github.com/alikarimi999/wallet/wallet"
 )
@@ -11,9 +11,19 @@ type sendUTXOSET struct {
 	Utxos   []*wallet.UTXO `json:"utxos"`
 }
 
-type msgTRX struct {
-	Timestamp time.Time
-	TXID      []byte
-	TxInputs  []wallet.TxOut
-	TxOutputs []wallet.TxIn
+type msgTX struct {
+	SenderID string             `json:"sender"`
+	TX       wallet.Transaction `json:"tx"`
+}
+
+func NewMsgTX(sender string, utxos []*wallet.UTXO, from wallet.Publickey, to wallet.Publickeyhash, amount int) *msgTX {
+	tx, err := wallet.NewTX(utxos, from, to, amount)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &msgTX{
+		SenderID: sender,
+		TX:       *tx,
+	}
 }
