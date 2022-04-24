@@ -1,17 +1,21 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/alikarimi999/wallet/utils"
 	"github.com/alikarimi999/wallet/wallet"
 	"github.com/btcsuite/btcutil/hdkeychain"
 	"github.com/spf13/viper"
 	"github.com/tyler-smith/go-bip39"
+)
+
+const (
+	DefaultName string = "wallet"
 )
 
 type config struct {
@@ -22,26 +26,35 @@ type config struct {
 	viper *viper.Viper
 }
 
-func NewConfig(path string) *config {
-
-	s := strings.Split(path, string(os.PathSeparator))
-
-	c := &config{}
-	file := s[len(s)-1]
-	fsplit := strings.Split(file, ".")
-	if len(fsplit) == 1 {
-		c.configType = "json"
-	} else {
-		c.configType = fsplit[len(fsplit)-1]
+func NewConfig() *config {
+	c := &config{
+		configName: DefaultName,
+		configPath: WalletPath(),
+		configType: "json",
+		viper:      viper.New(),
 	}
-	c.configName = file
-	c.configPath = strings.Join(s[:len(s)-1], string(os.PathSeparator))
 
-	c.viper = viper.New()
 	c.Creat()
-
 	return c
+}
 
+func WalletPath() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return filepath.Join(home, ".shitcoin_wallet")
+}
+
+func WalletExist() bool {
+	wallet_path := WalletPath()
+	path := filepath.Join(wallet_path, DefaultName)
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		// file does not exist
+		return false
+	}
+	return true
 }
 
 func (c *config) Creat() {

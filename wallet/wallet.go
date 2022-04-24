@@ -2,7 +2,9 @@ package wallet
 
 import (
 	"crypto/ecdsa"
+	"fmt"
 	"log"
+	"sort"
 
 	"github.com/alikarimi999/wallet/utils"
 	"github.com/btcsuite/btcd/btcec"
@@ -32,7 +34,7 @@ type Account struct {
 	Path Path
 }
 
-func NewWallet(mnemonic string, p Path) *Wallet {
+func NewWallet(mnemonic string) *Wallet {
 	seed := bip39.NewSeed(mnemonic, "")
 
 	w := &Wallet{
@@ -92,6 +94,8 @@ func (w *Wallet) NewAccount() {
 	a.PublicKeyByte = a.BtcecPub.SerializeCompressed()
 	a.Address = address.EncodeAddress()
 
+	fmt.Printf("new account with address %s and path %s created\n", a.Address, a.Path)
+
 	w.Accounts[a.Address] = a
 }
 
@@ -113,4 +117,15 @@ func (a *Account) SignTx(tx *Transaction) {
 		in.PublicKey = a.PublicKeyByte
 	}
 
+}
+
+func (w *Wallet) SortAccounts() []*Account {
+	accs := []*Account{}
+
+	for _, acc := range w.Accounts {
+		accs = append(accs, acc)
+	}
+	sort.SliceStable(accs, func(i, j int) bool { return accs[i].Path.AddressIndex < accs[j].Path.AddressIndex })
+
+	return accs
 }

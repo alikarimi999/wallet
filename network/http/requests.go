@@ -12,7 +12,7 @@ import (
 	"github.com/alikarimi999/wallet/wallet"
 )
 
-func GetUTXOSet(address string) []*wallet.UTXO {
+func GetUTXOSet(address string, node string) []*wallet.UTXO {
 	resp, err := http.Get(fmt.Sprintf("http://localhost:5000/getutxo?account=%s", address))
 
 	if err != nil {

@@ -2,16 +2,20 @@ package main
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/alikarimi999/wallet/config"
+	"github.com/alikarimi999/wallet/cli"
 	network "github.com/alikarimi999/wallet/network/http"
 	"github.com/alikarimi999/wallet/utils"
 	"github.com/alikarimi999/wallet/wallet"
 )
 
 func main() {
+	defer os.Exit(0)
+	cmd := new(cli.Commandline)
+	cmd.Run()
 
-	config := config.NewConfig("./here/wallet")
+	// config := config.NewConfig("./here/wallet")
 	// var mnemonic = "egg angle gesture jungle credit picnic globe novel aunt flower soccer path"
 
 	// wallet := wallet.NewWallet(mnemonic, wallet.DefaultPath)
@@ -26,10 +30,10 @@ func main() {
 	// 	log.Fatalln(err)
 	// }
 
-	w := config.GetWallet()
-	for _, a := range w.Accounts {
-		fmt.Println(a.Path.Account)
-	}
+	// w := config.GetWallet()
+	// for _, a := range w.Accounts {
+	// 	fmt.Println(a.Path.Account)
+	// }
 
 	// test
 
@@ -60,10 +64,10 @@ func main() {
 
 }
 
-func send(w *wallet.Wallet, from, to string, amount int) error {
+func send(w *wallet.Wallet, from, to string, amount int, node string) error {
 
 	sender := w.Account(from)
-	utxos := network.GetUTXOSet(from)
+	utxos := network.GetUTXOSet(from, node)
 
 	msg := network.NewMsgTX("wallet", utxos, sender.PublicKeyByte, utils.Add2PKH(to), amount)
 
