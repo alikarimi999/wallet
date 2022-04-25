@@ -187,6 +187,7 @@ func (cli *Commandline) Run() {
 				log.Fatal(err)
 			}
 			fmt.Println("Wallet created successfully")
+			return
 		}
 		fmt.Println("Phrase Key is invalid")
 	}
@@ -199,7 +200,7 @@ func (cli *Commandline) Run() {
 		}
 		c := config.NewConfig()
 		w := c.GetWallet()
-		fmt.Println("Never share your 12-word backup phrase and private keys with anyone.")
+		fmt.Println("Never share your backup phrase and private keys with anyone.")
 		fmt.Printf("\nPhrase Key:\n")
 		fmt.Printf("\t\"%s\"\n", w.Mnemonic)
 	}
