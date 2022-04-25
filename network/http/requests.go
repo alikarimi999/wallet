@@ -9,11 +9,12 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/alikarimi999/wallet/utils"
 	"github.com/alikarimi999/wallet/wallet"
 )
 
 func GetUTXOSet(address string, node string) []*wallet.UTXO {
-	resp, err := http.Get(fmt.Sprintf("http://localhost:5000/getutxo?account=%s", address))
+	resp, err := http.Get(utils.JoinURL(node, fmt.Sprintf("getutxo?account=%s", address)))
 
 	if err != nil {
 		log.Fatal(err)
@@ -32,16 +33,17 @@ func GetUTXOSet(address string, node string) []*wallet.UTXO {
 
 }
 
-func SendTRX(msg msgTX) {
+func SendTRX(msg msgTX, node string) {
 
 	b, err := json.Marshal(msg)
 	if err != nil {
 		log.Panic(err)
 	}
-	resp, err := http.Post("http://localhost:5000/sendtrx", "application/json", bytes.NewBuffer(b))
+	resp, err := http.Post(utils.JoinURL(node, "sendtrx"), "application/json", bytes.NewBuffer(b))
 	if err != nil {
 		log.Panic(err)
 	}
+
 	fmt.Println()
 	io.Copy(os.Stdout, resp.Body)
 }

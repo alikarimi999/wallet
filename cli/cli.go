@@ -231,7 +231,7 @@ func sendTX(w *wallet.Wallet, from, to string, amount int, node string) error {
 	// sign transaction
 	sender.SignTx(&msg.TX)
 
-	network.SendTRX(*msg)
+	network.SendTRX(*msg, node)
 
 	return nil
 }

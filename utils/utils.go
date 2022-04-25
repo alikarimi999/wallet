@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"fmt"
 	"log"
+	"path"
+	"strings"
 
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcutil"
@@ -47,4 +50,10 @@ func Add2PKH(address string) []byte {
 		log.Fatal(err)
 	}
 	return pkh
+}
+
+// TODO: make it better
+func JoinURL(base string, paths ...string) string {
+	p := path.Join(paths...)
+	return fmt.Sprintf("%s/%s", strings.TrimRight(base, "/"), strings.TrimLeft(p, "/"))
 }
