@@ -28,6 +28,14 @@ the wallet must send the transaction to a full node in the network and by defaul
 ```bash
 $ wallet send -from <address> -to <address> -amount 10 -node http://28fa-5-213-168-103.ngrok.io 
 ```
+## Restore Wallet
+Run the following command to restore wallet from a mnemonic phrase
+```bash
+$ wallet restore -phrase <mnemonic phrase>
+#Example 
+```bash
+$ wallet restore -phrase "regular clever move female attitude chunk rebel hedgehog sugar rain wish stool"
+```
 
 ## New Account
 Based on BIP44 you can derive new Private and Public keys followed by new Addresses from a master key in a [Path level](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#path-levels)
@@ -63,4 +71,4 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)
+wallet is available under the MIT license. See the [LICENSE](https://github.com/alikarimi999/wallet/blob/master/LICENSE) file for more info.
