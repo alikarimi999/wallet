@@ -120,7 +120,6 @@ func (cli *Commandline) Run() {
 	}
 
 	if send.Parsed() {
-		fmt.Println(balance.Parsed())
 
 		if !config.WalletExist() {
 			fmt.Println("There is not any wallet. please create a wallet first")
